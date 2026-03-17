@@ -1,6 +1,6 @@
-﻿jugaad\_data.nse.live.NSELive.corporate\_announcements
-======================================================
+﻿NSELive.corporate_announcements
+===============================
 
 .. currentmodule:: jugaad_data.nse.live
 
-.. automethod:: NSELive.corporate_announcements
+.. automethod:: jugaad_data.nse.live.NSELive.corporate_announcements

@@ -1,6 +1,6 @@
-﻿jugaad\_data.nse.live.NSELive.stock\_quote\_fno
-===============================================
+﻿NSELive.stock_quote_fno
+=======================
 
 .. currentmodule:: jugaad_data.nse.live
 
-.. automethod:: NSELive.stock_quote_fno
+.. automethod:: jugaad_data.nse.live.NSELive.stock_quote_fno

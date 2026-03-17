@@ -1,6 +1,6 @@
-﻿jugaad\_data.nse.live.NSELive.tick\_data
-========================================
+﻿NSELive.tick_data
+=================
 
 .. currentmodule:: jugaad_data.nse.live
 
-.. automethod:: NSELive.tick_data
+.. automethod:: jugaad_data.nse.live.NSELive.tick_data

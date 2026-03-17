@@ -1,6 +1,6 @@
-﻿jugaad\_data.nse.live.NSELive.market\_status
-============================================
+﻿NSELive.market_status
+=====================
 
 .. currentmodule:: jugaad_data.nse.live
 
-.. automethod:: NSELive.market_status
+.. automethod:: jugaad_data.nse.live.NSELive.market_status

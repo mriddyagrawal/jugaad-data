@@ -1,48 +1,43 @@
-``NSEHistory`` — Historical Stock & Derivatives Data
-=====================================================
+NSEHistory — Historical Stock & Derivatives Data
+=================================================
 
-.. automodule:: jugaad_data.nse.history
+.. currentmodule:: jugaad_data.nse.history
+
+.. autoclass:: NSEHistory
    :no-members:
+   :no-inherited-members:
 
-Classes
--------
+   .. rubric:: Methods
 
-.. autoclass:: jugaad_data.nse.history.NSEHistory
-   :members:
-   :undoc-members:
+   .. autosummary::
+      :toctree: nse_history/
 
-.. autoclass:: jugaad_data.nse.history.NSEIndexHistory
-   :members:
-   :undoc-members:
+      ~NSEHistory.stock_raw
+      ~NSEHistory.stock_df
+      ~NSEHistory.stock_csv
+      ~NSEHistory.derivatives_raw
+      ~NSEHistory.derivatives_df
+      ~NSEHistory.derivatives_csv
 
-Module-level Functions
-----------------------
+---
 
-Stock Data
-~~~~~~~~~~
+Module-level Functions (Deprecated)
+-----------------------------------
 
-.. autofunction:: jugaad_data.nse.history.stock_raw
+.. rubric:: Stock Data
 
-.. autofunction:: jugaad_data.nse.history.stock_df
+.. autosummary::
+   :toctree: nse_history/
 
-.. autofunction:: jugaad_data.nse.history.stock_csv
+   stock_raw
+   stock_df
+   stock_csv
 
-Derivatives Data
-~~~~~~~~~~~~~~~~
+.. rubric:: Derivatives Data
 
-.. autofunction:: jugaad_data.nse.history.derivatives_raw
+.. autosummary::
+   :toctree: nse_history/
 
-.. autofunction:: jugaad_data.nse.history.derivatives_df
-
-.. autofunction:: jugaad_data.nse.history.derivatives_csv
-
-Index Data
-~~~~~~~~~~
-
-.. autofunction:: jugaad_data.nse.history.index_raw
-
-.. autofunction:: jugaad_data.nse.history.index_df
-
-.. autofunction:: jugaad_data.nse.history.index_csv
-
-.. autofunction:: jugaad_data.nse.history.index_pe_df
+   derivatives_raw
+   derivatives_df
+   derivatives_csv

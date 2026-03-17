@@ -1,9 +1,21 @@
-``RBI`` — Reserve Bank of India Data
-=====================================
+RBI — Reserve Bank of India Data
+=================================
 
-.. automodule:: jugaad_data.rbi
+.. currentmodule:: jugaad_data.rbi
+
+.. autoclass:: RBI
    :no-members:
+   :no-inherited-members:
 
-.. autoclass:: jugaad_data.rbi.RBI
-   :members:
-   :undoc-members:
+   .. rubric:: Attributes
+
+   .. autosummary::
+
+      ~RBI.base_url
+
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree: rbi/
+
+      ~RBI.current_rates

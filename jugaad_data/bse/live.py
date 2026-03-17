@@ -7,6 +7,22 @@ from ..util import live_cache
 
 
 class BSELive:
+    """Real-time data client for BSE (Bombay Stock Exchange).
+
+    Fetches live corporate announcements, scrip (stock) lists, and
+    detailed security information from BSE's API. Supports automatic
+    conversion between symbols and scrip codes and integrates with
+    :func:`~jugaad_data.util.live_cache`.
+
+    Example::
+
+        >>> from jugaad_data.bse import BSELive
+        >>> b = BSELive()
+        >>> # Get announcements for a specific stock by symbol
+        >>> announcements = b.corporate_announcements_by_symbol("ICICIBANK")
+        >>> # Convert symbol to scrip code
+        >>> code = b.symbol_to_scrip_code("TCS") # '532540'
+    """
     time_out = 5
     base_url = "https://api.bseindia.com/BseIndiaAPI/api"
     page_url = "https://www.bseindia.com/corporates/ann.html"

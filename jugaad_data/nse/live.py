@@ -21,6 +21,7 @@ class NSELive:
         >>> n = NSELive()
         >>> quote = n.stock_quote("SBIN")
         >>> print(quote['priceInfo']['lastPrice'])
+        1063.2
     """
     time_out = 5
     base_url = "https://www.nseindia.com/api"

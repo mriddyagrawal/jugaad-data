@@ -1,6 +1,6 @@
-﻿jugaad\_data.nse.live.NSELive.option\_chain\_contract\_info
-===========================================================
+﻿NSELive.option_chain_contract_info
+==================================
 
 .. currentmodule:: jugaad_data.nse.live
 
-.. automethod:: NSELive.option_chain_contract_info
+.. automethod:: jugaad_data.nse.live.NSELive.option_chain_contract_info

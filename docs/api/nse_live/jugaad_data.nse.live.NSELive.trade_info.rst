@@ -1,6 +1,6 @@
-﻿jugaad\_data.nse.live.NSELive.trade\_info
-=========================================
+﻿NSELive.trade_info
+==================
 
 .. currentmodule:: jugaad_data.nse.live
 
-.. automethod:: NSELive.trade_info
+.. automethod:: jugaad_data.nse.live.NSELive.trade_info

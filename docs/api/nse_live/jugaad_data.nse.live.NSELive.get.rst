@@ -1,6 +1,6 @@
-﻿jugaad\_data.nse.live.NSELive.get
-=================================
+﻿NSELive.get
+===========
 
 .. currentmodule:: jugaad_data.nse.live
 
-.. automethod:: NSELive.get
+.. automethod:: jugaad_data.nse.live.NSELive.get

@@ -16,15 +16,22 @@ import json
 
 
 class NSEDailyReports:
-    """Handles NSE Daily Reports API (available from Jul 8, 2024 onwards)
-    
-    This API provides access to the latest daily reports from NSE including
-    the new Unified Distilled File Format (UDiff) for bhavcopy.
-    
-    API supports current day and previous day only. For historical data,
-    use NSEArchives.full_bhavcopy_raw() instead.
+    """NSE Daily Reports (UDiff) API client.
+
+    Accesses the latest daily reports and the Unified Distilled File Format
+    (UDiff) introduced by NSE on July 8, 2024. Primarily used for
+    fetching the current and previous day's market snapshots.
+
+    Example::
+
+        >>> from jugaad_data.nse import NSEDailyReports
+        >>> dr = NSEDailyReports()
+        >>> # List available report types for Capital Market
+        >>> reports = dr.list_available_files(segment="CM")
+        >>> # Download a specific UDiff bhavcopy
+        >>> content = dr.download_file("CM-UDIFF-BHAVCOPY-CSV")
     """
-    
+
     api_url = "https://www.nseindia.com/api/daily-reports"
     base_url = "https://nsearchives.nseindia.com/"
     timeout = 4
@@ -172,6 +179,23 @@ def unzip(function):
 
 
 class NSEArchives:
+    """NSE archival data client for bhavcopies and historical reports.
+
+    Provides access to historical daily market snapshots (bhavcopies) for
+    Equities and Derivatives. Automatically handles the transition to the
+    UDiff format (post July 2024) and falls back to legacy formats where
+    necessary.
+
+    Example::
+
+        >>> from jugaad_data.nse import NSEArchives
+        >>> from datetime import date
+        >>> a = NSEArchives()
+        >>> # Download and save Equity bhavcopy
+        >>> a.bhavcopy_save(date(2024, 1, 1), "/path/to/save")
+        >>> # Download and save Derivatives bhavcopy
+        >>> a.bhavcopy_fo_save(date(2024, 1, 1), "/path/to/save")
+    """
     base_url = "https://nsearchives.nseindia.com/"
     # Conventions for URL date formatting:
     #   d    - 1, 12 (without leading zero)
@@ -437,7 +461,19 @@ class NSEArchives:
         return self.daily_reports.list_available_files(segment)
 
 class NSEIndicesArchives(NSEArchives):
-    """Downloads index bhavcopies from niftyindices.com."""
+    """Index archival data client for NiftyIndices.
+
+    Downloads daily historical index closing data (bhavcopies) from
+    ``niftyindices.com``.
+
+    Example::
+
+        >>> from jugaad_data.nse import NSEIndicesArchives
+        >>> from datetime import date
+        >>> ia = NSEIndicesArchives()
+        >>> # Save index bhavcopy
+        >>> ia.bhavcopy_index_save(date(2024, 1, 1), "/path/to/save")
+    """
 
     def __init__(self):
         super().__init__()

@@ -8,6 +8,7 @@ Auto-generated documentation from source code docstrings.
 
    nse_live
    nse_history
+   nse_index_history
    nse_archives
    bse
    rbi

@@ -1,6 +1,14 @@
-``holidays`` — NSE Trading Holidays
-====================================
+holidays — NSE Trading Holidays
+=================================
+
+.. currentmodule:: jugaad_data.holidays
 
 .. automodule:: jugaad_data.holidays
-   :members:
-   :undoc-members:
+   :no-members:
+
+.. rubric:: Functions
+
+.. autosummary::
+   :toctree: holidays/
+
+   holidays

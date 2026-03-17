@@ -1,6 +1,6 @@
-﻿jugaad\_data.nse.live.NSELive.equities\_option\_chain
-=====================================================
+﻿NSELive.equities_option_chain
+=============================
 
 .. currentmodule:: jugaad_data.nse.live
 
-.. automethod:: NSELive.equities_option_chain
+.. automethod:: jugaad_data.nse.live.NSELive.equities_option_chain

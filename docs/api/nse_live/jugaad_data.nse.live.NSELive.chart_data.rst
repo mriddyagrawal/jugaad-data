@@ -1,6 +1,6 @@
-﻿jugaad\_data.nse.live.NSELive.chart\_data
-=========================================
+﻿NSELive.chart_data
+==================
 
 .. currentmodule:: jugaad_data.nse.live
 
-.. automethod:: NSELive.chart_data
+.. automethod:: jugaad_data.nse.live.NSELive.chart_data

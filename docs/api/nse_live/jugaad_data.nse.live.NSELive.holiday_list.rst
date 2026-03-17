@@ -1,6 +1,6 @@
-﻿jugaad\_data.nse.live.NSELive.holiday\_list
-===========================================
+﻿NSELive.holiday_list
+====================
 
 .. currentmodule:: jugaad_data.nse.live
 
-.. automethod:: NSELive.holiday_list
+.. automethod:: jugaad_data.nse.live.NSELive.holiday_list

@@ -1,6 +1,6 @@
-﻿jugaad\_data.nse.live.NSELive.index\_option\_chain
-==================================================
+﻿NSELive.index_option_chain
+==========================
 
 .. currentmodule:: jugaad_data.nse.live
 
-.. automethod:: NSELive.index_option_chain
+.. automethod:: jugaad_data.nse.live.NSELive.index_option_chain

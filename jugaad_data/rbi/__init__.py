@@ -75,14 +75,18 @@ def extract_rates_from_tables(bs):
 
 
 class RBI:
-    """Scrape current rates and indices from the RBI website.
+    """Reserve Bank of India (RBI) economic data scraper.
+
+    Scrapes the RBI homepage for real-time monetary policy rates,
+    T-bill yields, and other key financial indicators directly from
+    the source.
 
     Example::
 
         >>> from jugaad_data.rbi import RBI
         >>> r = RBI()
         >>> rates = r.current_rates()
-        >>> print(rates['Policy Repo Rate'])
+        >>> print(f"Repo Rate: {rates['Policy Repo Rate']}")
     """
 
     base_url = "https://www.rbi.org.in/"

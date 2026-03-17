@@ -1,6 +1,6 @@
-﻿jugaad\_data.nse.live.NSELive.live\_fno
-=======================================
+﻿NSELive.live_fno
+================
 
 .. currentmodule:: jugaad_data.nse.live
 
-.. automethod:: NSELive.live_fno
+.. automethod:: jugaad_data.nse.live.NSELive.live_fno

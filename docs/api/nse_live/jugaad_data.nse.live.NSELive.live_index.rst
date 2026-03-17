@@ -1,6 +1,6 @@
-﻿jugaad\_data.nse.live.NSELive.live\_index
-=========================================
+﻿NSELive.live_index
+==================
 
 .. currentmodule:: jugaad_data.nse.live
 
-.. automethod:: NSELive.live_index
+.. automethod:: jugaad_data.nse.live.NSELive.live_index

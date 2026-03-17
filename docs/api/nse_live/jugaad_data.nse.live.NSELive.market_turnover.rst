@@ -1,6 +1,6 @@
-﻿jugaad\_data.nse.live.NSELive.market\_turnover
-==============================================
+﻿NSELive.market_turnover
+=======================
 
 .. currentmodule:: jugaad_data.nse.live
 
-.. automethod:: NSELive.market_turnover
+.. automethod:: jugaad_data.nse.live.NSELive.market_turnover
