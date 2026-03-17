@@ -1,6 +1,9 @@
 """
-    Implements functionality to download archival data such as Bhavcopy, bulk
-    deals from NSE and NSEIndices website
+NSE archival data: bhavcopies, daily reports, and bulk deals.
+
+Provides classes for downloading daily market snapshots (bhavcopies)
+and NSE’s 39+ daily report types.  Supports both the legacy ZIP-based
+format and the newer UDiff format (from July 8, 2024 onwards).
 """
 from datetime import datetime, date, timedelta
 import os
@@ -170,15 +173,14 @@ def unzip(function):
 
 class NSEArchives:
     base_url = "https://nsearchives.nseindia.com/"
-    """Conventions
-           d - 1, 12 (without leading zero)
-          dd - 01, 21 (day of the month with leading zero)
-          mm - 01, 12 (month with leading zero)
-           m - 1, 12 (month without leading zero)
-         MMM - JAN, DEC
-          yy - 19, 20
-        yyyy - 2020, 2030
-    """
+    # Conventions for URL date formatting:
+    #   d    - 1, 12 (without leading zero)
+    #   dd   - 01, 21 (day of the month with leading zero)
+    #   mm   - 01, 12 (month with leading zero)
+    #   m    - 1, 12 (month without leading zero)
+    #   MMM  - JAN, DEC
+    #   yy   - 19, 20
+    #   yyyy - 2020, 2030
     timeout = 4 
     # Date when NSE switched to UDiff format (Unified Distilled File Format)
     udiff_start_date = date(2024, 7, 8)
@@ -435,6 +437,8 @@ class NSEArchives:
         return self.daily_reports.list_available_files(segment)
 
 class NSEIndicesArchives(NSEArchives):
+    """Downloads index bhavcopies from niftyindices.com."""
+
     def __init__(self):
         super().__init__()
         self.base_url = "https://www.niftyindices.com"

@@ -1,3 +1,9 @@
+"""Command-line interface for jugaad-data.
+
+Provides the ``jdata`` CLI with sub-commands for downloading
+bhavcopies, historical stock/index data, and derivatives data.
+Built with `Click <https://click.palletsprojects.com/>`_.
+"""
 import os
 import click
 from datetime import date, datetime, timedelta

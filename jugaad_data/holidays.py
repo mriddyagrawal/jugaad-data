@@ -1,3 +1,8 @@
+"""NSE trading holiday calendar.
+
+Provides a list of NSE trading holidays from 1997 to 2025 and a
+filter function :func:`holidays`.
+"""
 from datetime import time, date, datetime
 
 """
@@ -405,6 +410,15 @@ holidays_str = [
 
 
 def holidays(year=None, month=None):
+    """Return NSE trading holidays, optionally filtered.
+
+    Args:
+        year (int, optional): Keep only holidays in this year.
+        month (int, optional): Keep only holidays in this month.
+
+    Returns:
+        list[datetime.date]: Matching holiday dates.
+    """
     h = [datetime.strptime(d, "%Y-%m-%d").date() for d in holidays_str]
     if year:
         h = [d for d in h if d.year==year]

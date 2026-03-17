@@ -1,7 +1,14 @@
 """
-    Implements functionality to download historical stock, index and
-    derivatives data from NSE and
-    NSEIndices website
+Historical stock, index, and derivatives data from NSE and NiftyIndices.
+
+This module provides classes and convenience functions for downloading
+historical OHLC data, derivatives contracts, and index values.
+
+Key public functions (module-level):
+    - :func:`stock_raw` / :func:`stock_df` / :func:`stock_csv`
+    - :func:`derivatives_raw` / :func:`derivatives_df` / :func:`derivatives_csv`
+    - :func:`index_raw` / :func:`index_df` / :func:`index_csv`
+    - :func:`index_pe_raw` / :func:`index_pe_df`
 """
 import os
 import json
@@ -26,6 +33,13 @@ from .archives import (bhavcopy_raw, bhavcopy_save,
 
 APP_NAME = "nsehistory"
 class NSEHistory:
+    """Fetches historical stock and derivatives data from NSE.
+
+    Uses NSE's ``/api/historicalOR/`` endpoints with session-based
+    cookie management to mimic a browser.  Results are cached to
+    disk via :func:`~jugaad_data.util.cached`.
+    """
+
     def __init__(self):
         
         self.headers = {
@@ -60,6 +74,18 @@ class NSEHistory:
         self.ssl_verify = True
 
     def _get(self, path_name, params):
+        """Make an authenticated GET request to an NSE API endpoint.
+
+        On first call, visits the equity quote page to obtain session
+        cookies, then fetches the requested endpoint.
+
+        Args:
+            path_name: Key into :attr:`path_map`.
+            params: Query-string parameters.
+
+        Returns:
+            :class:`requests.Response`
+        """
         # Fetch cookies from the report page to maintain session
         if not self.s.cookies:
             path = self.path_map["equity_quote_page"]
@@ -110,6 +136,21 @@ class NSEHistory:
         return j['data']
     
     def stock_raw(self, symbol, from_date, to_date, series="EQ"):
+        """Download raw historical stock data as a list of dicts.
+
+        Splits the date range into monthly chunks and fetches each
+        chunk in parallel.
+
+        Args:
+            symbol: NSE stock symbol, e.g. ``"SBIN"``.
+            from_date: Start date.
+            to_date: End date.
+            series: Trading series (default ``"EQ"``).
+
+        Returns:
+            list[dict]: One dict per trading day with keys like
+            ``CH_TIMESTAMP``, ``CH_OPENING_PRICE``, etc.
+        """
         date_ranges = ut.break_dates(from_date, to_date)
         params = [(symbol, x[0], x[1], series) for x in reversed(date_ranges)]
         chunks = ut.pool(self._stock, params, max_workers=self.workers)
@@ -117,6 +158,21 @@ class NSEHistory:
         return list(itertools.chain.from_iterable(chunks))
 
     def derivatives_raw(self, symbol, from_date, to_date, expiry_date, instrument_type, strike_price, option_type):
+        """Download raw historical derivatives data as a list of dicts.
+
+        Args:
+            symbol: NSE stock/index symbol.
+            from_date: Start date.
+            to_date: End date.
+            expiry_date: Contract expiry date.
+            instrument_type: One of ``FUTSTK``, ``FUTIDX``,
+                ``OPTSTK``, ``OPTIDX``.
+            strike_price: Strike price (required for options, else ``None``).
+            option_type: ``"CE"`` or ``"PE"`` (required for options, else ``None``).
+
+        Returns:
+            list[dict]: One dict per trading day.
+        """
         date_ranges = ut.break_dates(from_date, to_date)
         params = [(symbol, x[0], x[1], expiry_date, instrument_type, strike_price, option_type) for x in reversed(date_ranges)]
         chunks = ut.pool(self._derivatives, params, max_workers=self.workers)
@@ -153,6 +209,19 @@ stock_dtypes = [  ut.np_date,  str,
             str]
    
 def stock_csv(symbol, from_date, to_date, series="EQ", output="", show_progress=True):
+    """Download historical stock data and save to a CSV file.
+
+    Args:
+        symbol: NSE stock symbol, e.g. ``"SBIN"``.
+        from_date (datetime.date): Start date.
+        to_date (datetime.date): End date.
+        series: Trading series (default ``"EQ"``).
+        output: Path for output CSV. Auto-generated if empty.
+        show_progress: Show a CLI progress bar.
+
+    Returns:
+        str: Path to the saved CSV file.
+    """
     if show_progress:
         h = NSEHistory()
         h.show_progress = show_progress
@@ -179,6 +248,24 @@ def stock_csv(symbol, from_date, to_date, series="EQ", output="", show_progress=
     return output
 
 def stock_df(symbol, from_date, to_date, series="EQ"):
+    """Download historical stock data as a :class:`pandas.DataFrame`.
+
+    Requires ``pandas`` to be installed.
+
+    Args:
+        symbol: NSE stock symbol, e.g. ``"SBIN"``.
+        from_date (datetime.date): Start date.
+        to_date (datetime.date): End date.
+        series: Trading series (default ``"EQ"``).
+
+    Returns:
+        pandas.DataFrame: Columns — DATE, SERIES, OPEN, HIGH, LOW,
+        PREV. CLOSE, LTP, CLOSE, VWAP, VOLUME, VALUE,
+        NO OF TRADES, DELIVERY QTY, DELIVERY %, SYMBOL.
+
+    Raises:
+        ModuleNotFoundError: If pandas is not installed.
+    """
     if not pd:
         raise ModuleNotFoundError("Please install pandas using \n pip install pandas")
     raw = stock_raw(symbol, from_date, to_date, series)
@@ -216,6 +303,22 @@ options_final_headers = [   "DATE", "EXPIRY", "OPTION TYPE", "STRIKE PRICE",
                      "SYMBOL"]
 
 def derivatives_csv(symbol, from_date, to_date, expiry_date, instrument_type, strike_price=None, option_type=None, output="", show_progress=False):
+    """Download historical derivatives data and save to a CSV file.
+
+    Args:
+        symbol: NSE stock/index symbol.
+        from_date (datetime.date): Start date.
+        to_date (datetime.date): End date.
+        expiry_date (datetime.date): Contract expiry date.
+        instrument_type: ``FUTSTK``, ``FUTIDX``, ``OPTSTK``, or ``OPTIDX``.
+        strike_price: Strike price (options only).
+        option_type: ``"CE"`` or ``"PE"`` (options only).
+        output: Output CSV path. Auto-generated if empty.
+        show_progress: Show a CLI progress bar.
+
+    Returns:
+        str: Path to the saved CSV file.
+    """
     if show_progress:
         h = NSEHistory()
         h.show_progress = show_progress
@@ -247,6 +350,26 @@ def derivatives_csv(symbol, from_date, to_date, expiry_date, instrument_type, st
     return output
 
 def derivatives_df(symbol, from_date, to_date, expiry_date, instrument_type, strike_price=None, option_type=None):
+    """Download historical derivatives data as a :class:`pandas.DataFrame`.
+
+    Requires ``pandas`` to be installed.
+
+    Args:
+        symbol: NSE stock/index symbol.
+        from_date (datetime.date): Start date.
+        to_date (datetime.date): End date.
+        expiry_date (datetime.date): Contract expiry date.
+        instrument_type: ``FUTSTK``, ``FUTIDX``, ``OPTSTK``, or ``OPTIDX``.
+        strike_price: Strike price (options only).
+        option_type: ``"CE"`` or ``"PE"`` (options only).
+
+    Returns:
+        pandas.DataFrame: Columns depend on instrument type
+        (futures vs options).
+
+    Raises:
+        ModuleNotFoundError: If pandas is not installed.
+    """
     if not pd:
         raise ModuleNotFoundError("Please install pandas using \n pip install pandas")
     raw = derivatives_raw(symbol, from_date, to_date, expiry_date, instrument_type, 
@@ -282,6 +405,12 @@ def derivatives_df(symbol, from_date, to_date, expiry_date, instrument_type, str
     return df
 
 class NSEIndexHistory(NSEHistory):
+    """Fetches historical index data from NiftyIndices.
+
+    Uses POST requests to ``niftyindices.com`` to retrieve index
+    OHLC data and PE/PB ratios.
+    """
+
     def __init__(self):
         super().__init__()
         self.headers = {
@@ -353,6 +482,18 @@ index_raw = ih.index_raw
 index_pe_raw = ih.index_pe_raw
 
 def index_csv(symbol, from_date, to_date, output="", show_progress=False):
+    """Download historical index data and save to a CSV file.
+
+    Args:
+        symbol: Index name, e.g. ``"NIFTY 50"``.
+        from_date (datetime.date): Start date.
+        to_date (datetime.date): End date.
+        output: Output CSV path. Auto-generated if empty.
+        show_progress: Show a CLI progress bar.
+
+    Returns:
+        str: Path to the saved CSV file.
+    """
     if show_progress:
         h = NSEIndexHistory()
         date_ranges = ut.break_dates(from_date, to_date)
@@ -378,6 +519,22 @@ def index_csv(symbol, from_date, to_date, output="", show_progress=False):
     return output
 
 def index_df(symbol, from_date, to_date):
+    """Download historical index data as a :class:`pandas.DataFrame`.
+
+    Requires ``pandas`` to be installed.
+
+    Args:
+        symbol: Index name, e.g. ``"NIFTY 50"``.
+        from_date (datetime.date): Start date.
+        to_date (datetime.date): End date.
+
+    Returns:
+        pandas.DataFrame: Columns — Index Name, INDEX_NAME,
+        HistoricalDate, OPEN, HIGH, LOW, CLOSE.
+
+    Raises:
+        ModuleNotFoundError: If pandas is not installed.
+    """
     if not pd:
         raise ModuleNotFoundError("Please install pandas using \n pip install pandas")
     raw = index_raw(symbol, from_date, to_date)
@@ -389,6 +546,21 @@ def index_df(symbol, from_date, to_date):
     return df
 
 def index_pe_df(symbol, from_date, to_date):
+    """Download historical index PE/PB data as a :class:`pandas.DataFrame`.
+
+    Requires ``pandas`` to be installed.
+
+    Args:
+        symbol: Index name, e.g. ``"NIFTY 50"``.
+        from_date (datetime.date): Start date.
+        to_date (datetime.date): End date.
+
+    Returns:
+        pandas.DataFrame: Columns — pe, pb, divYield, Index Name, DATE.
+
+    Raises:
+        ModuleNotFoundError: If pandas is not installed.
+    """
     if not pd:
         raise ModuleNotFoundError("Please install pandas using \n pip install pandas")
     raw = index_pe_raw(symbol, from_date, to_date)

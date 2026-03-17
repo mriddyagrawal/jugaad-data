@@ -97,22 +97,22 @@ class BSELive:
         return self.get("corporate_announcements", payload)
 
     def get_attachment_url(self, attachment_name):
-        """
-        Construct the full URL for downloading announcement attachments
-        
+        """Construct the full URL for downloading announcement attachments.
+
         Args:
-            attachment_name (str): The attachment filename from announcement data
-            
+            attachment_name (str): The attachment filename from announcement data.
+
         Returns:
-            str: Full URL for downloading the attachment
-            
-        Example:
+            str: Full URL for downloading the attachment.
+
+        Example::
+
             bse = BSELive()
             announcements = bse.corporate_announcements(scrip_code=532174)
             for announcement in announcements.get("Table", []):
                 if announcement.get("ATTACHMENTNAME"):
-                    attachment_url = bse.get_attachment_url(announcement["ATTACHMENTNAME"])
-                    print(f"Download URL: {attachment_url}")
+                    url = bse.get_attachment_url(announcement["ATTACHMENTNAME"])
+                    print(f"Download URL: {url}")
         """
         if not attachment_name:
             return None
@@ -296,7 +296,8 @@ class BSELive:
         Returns:
             dict: Response containing announcement data
             
-        Example:
+        Example::
+
             bse = BSELive()
             announcements = bse.corporate_announcements_by_symbol(
                 symbol="ICICIBANK",

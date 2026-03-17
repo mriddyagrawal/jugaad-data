@@ -1,10 +1,27 @@
 """
-    Implements live data fetch functionality
+NSE live market data.
+
+Provides the :class:`NSELive` class for fetching real-time stock
+quotes, index data, option chains, market status, derivative
+turnover, and corporate announcements from NSE.
 """
 from datetime import datetime
 from requests import Session
 from ..util import live_cache
 class NSELive:
+    """Real-time data client for NSE.
+
+    Maintains an HTTP session with browser-like headers and uses
+    :func:`~jugaad_data.util.live_cache` to avoid hitting NSE too
+    frequently (configurable via :attr:`time_out`).
+
+    Example::
+
+        >>> from jugaad_data.nse import NSELive
+        >>> n = NSELive()
+        >>> quote = n.stock_quote("SBIN")
+        >>> print(quote['priceInfo']['lastPrice'])
+    """
     time_out = 5
     base_url = "https://www.nseindia.com/api"
     nextapi_url = "https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi"
@@ -54,6 +71,15 @@ class NSELive:
         self.s.get(self.page_url)
 
     def get(self, route, payload={}):
+        """Fetch JSON data from an NSE API route.
+
+        Args:
+            route: Key into :attr:`_routes`.
+            payload: Query-string parameters.
+
+        Returns:
+            dict: Parsed JSON response.
+        """
         url = self.base_url + self._routes[route]
         r = self.s.get(url, params=payload)
         return r.json()
@@ -75,6 +101,15 @@ class NSELive:
 
     @live_cache
     def stock_quote(self, symbol):
+        """Get a detailed live quote for a stock.
+
+        Args:
+            symbol: NSE stock symbol, e.g. ``"SBIN"``.
+
+        Returns:
+            dict: Keys include ``priceInfo``, ``info``, ``metadata``,
+            ``securityInfo``, ``preOpenMarket``.
+        """
         data = {"symbol": symbol}
         return self.get("stock_quote", data) 
 
@@ -117,15 +152,38 @@ class NSELive:
 
     @live_cache
     def trade_info(self, symbol):
+        """Get trade information (order book, delivery) for a stock.
+
+        Args:
+            symbol: NSE stock symbol.
+
+        Returns:
+            dict: Keys include ``bulkBlockDeals``, ``marketDeptOrderBook``,
+            ``securityWiseDP``.
+        """
         data = {"symbol": symbol, "section": "trade_info"}
         return self.get("stock_quote", data) 
 
     @live_cache
     def market_status(self):
+        """Get the current status of all NSE market segments.
+
+        Returns:
+            dict: Contains ``marketState`` list with status per segment.
+        """
         return self.get("market_status", {})
 
     @live_cache
     def chart_data(self, symbol, indices=False):
+        """Get intraday chart data (timestamp, price pairs).
+
+        Args:
+            symbol: Stock symbol or index name.
+            indices: Set ``True`` for index data.
+
+        Returns:
+            dict: Contains ``grapthData`` (list of ``[timestamp_ms, price]``).
+        """
         data = {"index" : symbol + "EQN"}
         if indices:
             data["index"] = symbol
@@ -134,22 +192,44 @@ class NSELive:
     
     @live_cache
     def tick_data(self, symbol, indices=False):
+        """Alias for :meth:`chart_data`."""
         return self.chart_data(symbol, indices)
 
     @live_cache
     def market_turnover(self):
+        """Get turnover across all market segments."""
         return self.get("market_turnover")
 
     @live_cache
     def eq_derivative_turnover(self, type="allcontracts"):
+        """Get equity derivative turnover data.
+
+        Args:
+            type: Filter type (default ``"allcontracts"``).
+        """
         data = {"index": type}
         return self.get("equity_derivative_turnover", data)
     
     @live_cache
     def all_indices(self):
+        """Get data for all NSE indices.
+
+        Returns:
+            dict: Keys include ``data`` (list of indices), ``advances``,
+            ``declines``, ``unchanged``.
+        """
         return self.get("all_indices")
 
     def live_index(self, symbol="NIFTY 50"):
+        """Get detailed data for a specific index.
+
+        Args:
+            symbol: Index name, e.g. ``"NIFTY 50"``, ``"NIFTY BANK"``.
+
+        Returns:
+            dict: Keys include ``name``, ``data``, ``advance``,
+            ``marketStatus``.
+        """
         data = {"index" : symbol}
         return self.get("live_index", data)
     
@@ -210,15 +290,22 @@ class NSELive:
 
     @live_cache
     def live_fno(self):
+        """Get live data for all securities in F&O segment."""
         return self.live_index("SECURITIES IN F&O")
     
     @live_cache
     def pre_open_market(self, key="NIFTY"):
+        """Get pre-open market data.
+
+        Args:
+            key: Market segment key (default ``"NIFTY"``).
+        """
         data = {"key": key}
         return self.get("pre_open_market", data)
     
     @live_cache
     def holiday_list(self):
+        """Get the NSE trading holiday list."""
         return self.get("holiday_list", {})
 
     def corporate_announcements(self, segment='equities', from_date=None, to_date=None, symbol=None):

@@ -1,3 +1,8 @@
+"""RBI economic data scraper.
+
+Scrapes the Reserve Bank of India homepage for the latest monetary
+policy rates, T-bill yields, and other key financial indicators.
+"""
 from requests import Session
 from bs4 import BeautifulSoup
 
@@ -70,12 +75,28 @@ def extract_rates_from_tables(bs):
 
 
 class RBI:
+    """Scrape current rates and indices from the RBI website.
+
+    Example::
+
+        >>> from jugaad_data.rbi import RBI
+        >>> r = RBI()
+        >>> rates = r.current_rates()
+        >>> print(rates['Policy Repo Rate'])
+    """
+
     base_url = "https://www.rbi.org.in/"
 
     def __init__(self):
         self.s = Session()
-    
+
     def current_rates(self):
+        """Fetch current economic rates from the RBI homepage.
+
+        Returns:
+            dict: Key–value pairs such as ``'Policy Repo Rate'``,
+            ``'91 day T-bills'``, ``'Savings Deposit Rate'``, etc.
+        """
         r = self.s.get(self.base_url)
         
         bs = BeautifulSoup(r.text, "html.parser")

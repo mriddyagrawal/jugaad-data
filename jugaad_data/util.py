@@ -1,8 +1,15 @@
+"""Shared utility functions for caching, threading, and data conversion.
+
+This module provides decorators for disk-based and time-based caching,
+a thread pool helper, date range splitting, and optional numpy type
+converters.
+"""
 import os
 import collections
 import json
 import pickle
 import time
+import functools
 from datetime import datetime, timedelta, date
 from concurrent.futures import ThreadPoolExecutor
 import click
@@ -18,6 +25,7 @@ except:
     np = None
 
 def np_exception(function):
+    """Decorator that raises :class:`ModuleNotFoundError` when numpy is unavailable."""
     def wrapper(*args, **kwargs):
         if not np:
             raise ModuleNotFoundError("Please install pandas and numpy using \n pip install pandas")
@@ -27,6 +35,7 @@ def np_exception(function):
 
 @np_exception
 def np_float(num):
+    """Convert *num* to :class:`numpy.float64`, returning ``NaN`` on failure."""
     try:
         return np.float64(num)
     except:
@@ -34,6 +43,11 @@ def np_float(num):
 
 @np_exception
 def np_date(dt):
+    """Convert *dt* to :class:`numpy.datetime64`.
+
+    Accepts ISO strings (``"2020-01-01"``), ``"%d-%b-%Y"`` (``"01-Jan-2020"``),
+    and ``"%d %b %Y"`` (``"01 Jan 2020"``).  Returns ``NaT`` on failure.
+    """
     try:
         return np.datetime64(dt)
     except:
@@ -58,12 +72,23 @@ def np_date(dt):
     
 @np_exception
 def np_int(num):
+    """Convert *num* to :class:`numpy.int64`, returning ``0`` on failure."""
     try:
         return np.int64(num)
     except:
         return 0
 
 def break_dates(from_date, to_date):
+    """Split a date range into per-month chunks.
+
+    Args:
+        from_date (datetime.date): Start date.
+        to_date (datetime.date): End date.
+
+    Returns:
+        list[tuple]: List of ``(month_start, month_end)`` pairs that
+        together cover the full range.
+    """
     if from_date.replace(day=1) == to_date.replace(day=1):
         return [(from_date, to_date)]
     date_ranges = []
@@ -79,6 +104,11 @@ def break_dates(from_date, to_date):
 
 
 def kw_to_fname(**kw):
+    """Build a deterministic file name from keyword arguments.
+
+    Joins the sorted keyword values with ``"-"``, skipping ``self``.
+    Used by :func:`cached` to create unique cache file names.
+    """
     name = "-".join([str(kw[k]) for k in sorted(kw) if k != "self"])
     return name
 
@@ -118,6 +148,18 @@ def cached(app_name):
 
 
 def pool(function, params, use_threads=True, max_workers=2):
+    """Run *function* over *params* using a thread pool or sequentially.
+
+    Args:
+        function: Callable accepting positional args.
+        params: Iterable of tuples, each unpacked as ``function(*p)``.
+        use_threads: Use :class:`~concurrent.futures.ThreadPoolExecutor`
+            when ``True`` (default), else run sequentially.
+        max_workers: Maximum threads (default ``2``).
+
+    Returns:
+        Iterable of results, one per param tuple.
+    """
     if use_threads:
         with ThreadPoolExecutor(max_workers=max_workers) as ex:
             dfs = ex.map(function, *zip(*params))
@@ -132,31 +174,17 @@ def pool(function, params, use_threads=True, max_workers=2):
     return dfs
 
 def live_cache(app_name):
-    """Caches the output for time_out specified. This is done in order to
-    prevent hitting live quote requests to NSE too frequently. This wrapper
-    will fetch the quote/live result first time and return the same result for
-    any calls within 'time_out' seconds.
+    """Time-based in-memory cache decorator for live data methods.
 
-    Logic:
-        key = concat of args
-        try:
-            cached_value = self._cache[key]
-            if now - self._cache['tstamp'] < time_out
-                return cached_value['value']
-        except AttributeError: # _cache attribute has not been created yet
-            self._cache = {}
-        finally:
-            val = fetch-new-value
-            new_value = {'tstamp': now, 'value': val}
-            self._cache[key] = new_value
-            return val
+    Prevents hitting live-quote endpoints too frequently.  The first
+    call fetches the result normally; subsequent calls within
+    ``self.time_out`` seconds return the cached value.
 
+    The decorated method's ``self`` object must have a ``time_out``
+    attribute (seconds) and will gain a ``_cache`` dict attribute.
     """
+    @functools.wraps(app_name)
     def wrapper(self, *args, **kwargs):
-        """Wrapper function which calls the function only after the timeout,
-        otherwise returns value from the cache.
-
-        """
         # Get key by just concating the list of args and kwargs values and hope
         # that it does not break the code :P 
         inputs =  [str(a) for a in args] + [str(kwargs[k]) for k in kwargs]
