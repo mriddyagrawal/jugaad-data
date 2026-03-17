@@ -22,6 +22,7 @@ version = '0.33'
 # -- General configuration ---------------------------------------------------
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
@@ -29,10 +30,17 @@ extensions = [
     'myst_parser',
 ]
 
+toc_object_entries = True
+toc_object_entries_show_parents = "hide"
+add_module_names = False
+
+autosummary_generate = True
+
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store',
-                    # Exclude old markdown files
-                    '*.md']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+# Include __init__ docstrings in autosummary
+autodoc_default_flags = ['members']
 
 # -- Options for autodoc -----------------------------------------------------
 autodoc_member_order = 'bysource'
@@ -49,10 +57,26 @@ napoleon_include_init_with_doc = True
 napoleon_include_private_with_doc = False
 
 # -- Options for HTML output -------------------------------------------------
-html_theme = 'amunra_sphinx_theme'
+html_theme = 'pydata_sphinx_theme'
 html_static_path = ['_static']
 
-html_theme_options = {}
+html_theme_options = {
+    'navigation_depth': 3,
+    'show_toc_level': 2,
+    'navbar_align': 'left',
+    'icon_links': [
+        {
+            'name': 'GitHub',
+            'url': 'https://github.com/jugaad-py/jugaad-data',
+            'icon': 'fa-brands fa-github',
+        },
+        {
+            'name': 'PyPI',
+            'url': 'https://pypi.org/project/jugaad-data/',
+            'icon': 'fa-solid fa-box',
+        },
+    ],
+}
 
 # -- Options for intersphinx -------------------------------------------------
 intersphinx_mapping = {

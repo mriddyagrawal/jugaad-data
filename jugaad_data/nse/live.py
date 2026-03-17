@@ -116,37 +116,24 @@ class NSELive:
     @live_cache
     def stock_quote_fno(self, symbol):
         """Fetch live derivatives (futures & options) data for a symbol.
-        
+
         Args:
-            symbol: Stock/Index symbol (e.g., 'HDFC', 'NIFTY')
-        
+            symbol (str): Stock/Index symbol (e.g., ``'HDFC'``, ``'NIFTY'``).
+
         Returns:
-            Dictionary with derivatives data:
-            {
-                "data": [
-                    {
-                        "identifier": "OPTSTKHDFC30-Mar-2026CE2500.00",
-                        "instrumentType": "OPTSTK",  # OPTSTK or FUTSTK
-                        "underlying": "HDFC",
-                        "expiryDate": "30-Mar-2026",
-                        "optionType": "CE",  # CE, PE, or XX for futures
-                        "strikePrice": "2500.00",
-                        "lastPrice": 125.5,
-                        "openInterest": 1234,
-                        "totalTradedVolume": 5000,
-                        "openPrice": 120.0,
-                        "highPrice": 130.0,
-                        "lowPrice": 119.5,
-                        "changeInOpenInterest": 100,
-                        ...more fields
-                    },
-                    ...more contracts
-                ],
-                "timestamp": "..."
-            }
-        
-        Note: This uses the NSE NextApi endpoint (getSymbolDerivativesData).
-        Returns all available contracts for the given symbol.
+            dict: Derivatives data with keys:
+
+            - ``data`` – list of contract dicts, each containing
+              ``identifier``, ``instrumentType`` (OPTSTK/FUTSTK),
+              ``underlying``, ``expiryDate``, ``optionType`` (CE/PE/XX),
+              ``strikePrice``, ``lastPrice``, ``openInterest``,
+              ``totalTradedVolume``, ``openPrice``, ``highPrice``,
+              ``lowPrice``, ``changeInOpenInterest``, and more.
+            - ``timestamp`` – data timestamp string.
+
+        Note:
+            Uses the NSE NextApi endpoint (``getSymbolDerivativesData``).
+            Returns all available contracts for the given symbol.
         """
         return self._get_nextapi("getSymbolDerivativesData", symbol=symbol)
 

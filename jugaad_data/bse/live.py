@@ -62,7 +62,8 @@ class BSELive:
         Returns:
             dict: Response containing announcement data with Table and Table1 keys
             
-        Example:
+        Example::
+
             bse = BSELive()
             # Get ICICI Bank announcements
             announcements = bse.corporate_announcements(
