@@ -86,7 +86,8 @@ class RBI:
         >>> from jugaad_data.rbi import RBI
         >>> r = RBI()
         >>> rates = r.current_rates()
-        >>> print(f"Repo Rate: {rates['Policy Repo Rate']}")
+        >>> print(rates['Policy Repo Rate'])
+        5.25%
     """
 
     base_url = "https://www.rbi.org.in/"

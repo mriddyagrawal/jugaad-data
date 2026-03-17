@@ -18,10 +18,10 @@ class BSELive:
 
         >>> from jugaad_data.bse import BSELive
         >>> b = BSELive()
-        >>> # Get announcements for a specific stock by symbol
-        >>> announcements = b.corporate_announcements_by_symbol("ICICIBANK")
-        >>> # Convert symbol to scrip code
-        >>> code = b.symbol_to_scrip_code("TCS") # '532540'
+        >>> # Get latest corporate announcements for Reliance
+        >>> announcements = b.corporate_announcements_by_symbol("RELIANCE")
+        >>> print(announcements['Table'][0]['NEWSSUB'])
+        Media Release - RELIANCE INDUSTRIES SIGNS LANDMARK GREEN AMMONIA BINDING LONG-TERM OFFTAKE AGREEMENT WITH SAMSUNG C&T
     """
     time_out = 5
     base_url = "https://api.bseindia.com/BseIndiaAPI/api"

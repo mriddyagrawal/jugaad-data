@@ -97,8 +97,11 @@ class NSEHistory:
         >>> from jugaad_data.nse import NSEHistory
         >>> from datetime import date
         >>> n = NSEHistory()
-        >>> # Get historical stock data
+        >>> # Get historical stock data as DataFrame
         >>> df = n.stock_df("SBIN", date(2024, 1, 1), date(2024, 1, 10))
+        >>> # Save historical stock data to CSV
+        >>> n.stock_csv("SBIN", date(2024, 1, 1), date(2024, 1, 10))
+        'SBIN-2024-01-01-2024-01-10-EQ.csv'
     """
 
     def __init__(self):
